@@ -80,4 +80,14 @@ public class Model {
 		Collections.sort(connessi);
 		return connessi; 
 	}
+	
+	public String simula(Food cibo, int k) {
+		Simulator sim= new Simulator(this.graph, this);
+		sim.setK(k);
+		sim.init(cibo);
+		sim.run();
+		
+		String msg= String.format("Preparati %d cibi in %f minuti\n", sim.getFoodPreparati(), sim.getTempoPreparazione()); 
+		return msg; 
+	}
 }

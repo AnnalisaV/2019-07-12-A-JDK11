@@ -4,10 +4,20 @@ public class Food {
 	private Integer food_code;
 	private String display_name;
 	
+	private statoPreparazione preparazione; 
+	
+	public enum statoPreparazione{
+		DA_PREPARARE, 
+		IN_CORSO, 
+		PREPARATO
+	}
+	
+	
 	public Food(Integer food_code, String display_name) {
 		super();
 		this.food_code = food_code;
 		this.display_name = display_name;
+		this.preparazione= statoPreparazione.DA_PREPARARE; //forzato
 	}
 	
 	public Integer getFood_code() {
@@ -53,6 +63,15 @@ public class Food {
 		return display_name;
 	}
 
+	public statoPreparazione getPreparazione() {
+		return preparazione;
+	}
+
+	public void setPreparazione(statoPreparazione preparazione) {
+		this.preparazione = preparazione;
+	}
+
+	
 	
 	
 }

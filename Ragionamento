@@ -1,0 +1,17 @@
+Stazione  0  1  2 
+Food      f1 f2 f3
+
+Fine_preparazione (f2, stazione1)
+inizio_preparazione (f4, stazione1)
+fine preparazione (f4, stazione1)  
+
+Quando si elabora la preparazione del prossimo bisogna considerare ancora quello precedente 
+poiche' il tempo e' il peso dell'arco che collega i due 
+
+Allora 
+Fine_preparazione (f2, stazione1)
+inizio_preparazione (f2 concluso, stazione1)  
+si sceglie il prox food
+calcolo della durata 
+schedulazione de fine_preparazione (food scelto)
+fine preparazione (f4, stazione1)   con tempo + delta dove delta(peso arco che collega i due food)
