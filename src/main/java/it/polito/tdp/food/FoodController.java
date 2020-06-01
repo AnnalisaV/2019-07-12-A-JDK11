@@ -65,6 +65,8 @@ public class FoodController {
     	List<Food> foods= this.model.getFoods(portion);
     	this.boxFood.getItems().clear(); //pulisco tendina 
     	this.boxFood.getItems().addAll(foods); //popolo la tendina 
+    	this.model.creaGrafo(portion);
+    	txtResult.appendText("Grafo creato con "+this.model.nVertex()+" vertici e "+this.model.nEdges()+" archi\n");
     	
     }
     

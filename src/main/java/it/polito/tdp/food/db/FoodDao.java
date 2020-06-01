@@ -141,10 +141,52 @@ public class FoodDao {
 			return null ;
 		}
 		}
+
+	/**
+	 * Collegamento fra i vertici {@code Food}
+	 * @param f1
+	 * @param f2
+	 * @return
+	 */
+	public Double calorieCongiunte(Food f1, Food f2) {
+		
+		String sql="SELECT f1.food_code,f2.food_code,AVG(condiment_calories) as cal " + 
+				"FROM food_condiment AS f1, food_condiment AS f2, condiment " + 
+				"WHERE f1.condiment_code=f2.condiment_code AND f1.id!=f2.id " + 
+				"AND f2.condiment_code=condiment.condiment_code "
+				+ "AND f1.food_code=? AND f2.food_code=? " + 
+				"group BY f1.food_code, f2.food_code " ; 
+		
+		Double peso=null; 
+		try {
+			Connection conn = DBConnect.getConnection() ;
+            PreparedStatement st = conn.prepareStatement(sql) ;
+			st.setInt(1, f1.getFood_code());
+			st.setInt(2,  f2.getFood_code());
+			ResultSet res = st.executeQuery() ;
+			
+			//mi posiziono sulla prima riga del risultato : se vero -> c'e' risultato
+			if(res.first()) {
+				peso= res.getDouble("cal"); 
+			}
+			
+			conn.close();
+			return peso ;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null ;
+		}
 	
-	/*SELECT distinct f1.food_code,f2.food_code, count(f1.condiment_code),AVG(condiment_calories)
-	FROM food_condiment AS f1, food_condiment AS f2, condiment
-	WHERE f1.condiment_code=f2.condiment_code AND f1.food_code>f2.food_code
-	AND f2.condiment_code=condiment.condiment_code 
-	group BY f1.food_code, f2.food_code*/
+		/* In alternativa per ottenere le coppie 
+		 SELECT f1.food_code,f2.food_code,AVG(condiment_calories)
+FROM food_condiment AS f1, food_condiment AS f2, condiment
+WHERE f1.condiment_code=f2.condiment_code AND f1.id!=f2.id
+AND f2.condiment_code=condiment.condiment_code 
+group BY f1.food_code, f2.food_code
+		 */
+	}
+	
+	
+	
 }
