@@ -1,5 +1,7 @@
 package it.polito.tdp.food.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -61,5 +63,21 @@ public class Model {
 	
 	public int nEdges() {
 		return this.graph.edgeSet().size(); 
+	}
+	
+	/**
+	 * Elenco dei cinque cibi con calorie massime 
+	 */
+	public List<FoodCalories> cibiConnessiCalorieMax(Food f){
+		List<FoodCalories> connessi= new ArrayList<>(); 
+		List<Food> vicini = Graphs.neighborListOf(this.graph, f); 
+		for (Food fo : vicini) {
+			// prendo l'arco tra i due e ne guardo il peso
+			Double calories=this.graph.getEdgeWeight(this.graph.getEdge(f, fo)); 
+			connessi.add(new FoodCalories(fo, calories)); 
+			
+		}
+		Collections.sort(connessi);
+		return connessi; 
 	}
 }
