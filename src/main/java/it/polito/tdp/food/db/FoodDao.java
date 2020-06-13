@@ -6,39 +6,39 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import it.polito.tdp.food.model.Condiment;
+import it.polito.tdp.food.model.CoupleFoods;
 import it.polito.tdp.food.model.Food;
 import it.polito.tdp.food.model.Portion;
 
 public class FoodDao {
-	public List<Food> listAllFoods(){
+	
+	public void listAllFoods(Map<Integer, Food>idMap){
 		String sql = "SELECT * FROM food" ;
 		try {
 			Connection conn = DBConnect.getConnection() ;
 
 			PreparedStatement st = conn.prepareStatement(sql) ;
 			
-			List<Food> list = new ArrayList<>() ;
+			//List<Food> list = new ArrayList<>() ;
 			
 			ResultSet res = st.executeQuery() ;
 			
 			while(res.next()) {
-				try {
-					list.add(new Food(res.getInt("food_code"),
-							res.getString("display_name")
-							));
-				} catch (Throwable t) {
-					t.printStackTrace();
+				if (!idMap.containsKey(res.getInt("food_code"))) {
+					Food f= new Food(res.getInt("food_code"), res.getString("display_name") );
+					idMap.put(f.getFood_code(), f); 
 				}
 			}
 			
 			conn.close();
-			return list ;
+			//return list ;
 
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return null ;
+			//return null ;
 		}
 
 	}
@@ -108,5 +108,71 @@ public class FoodDao {
 			return null ;
 		}
 
+	}
+	
+	/**
+	 * Lista di {@code Food} con quel valore di portion distinte
+	 * @param portion
+	 * @param idMap
+	 * @return
+	 */
+	public List<Food> getFoodByPortion(int portion, Map<Integer, Food> idMap){
+		String sql="SELECT food_code, COUNT(DISTINCT portion_id) AS n " + 
+				"FROM `portion` " + 
+				"GROUP BY food_code " + 
+				"HAVING n =? "; 
+		List<Food> lista= new ArrayList<>(); 
+		
+		try {
+			Connection conn = DBConnect.getConnection() ;
+            PreparedStatement st = conn.prepareStatement(sql) ;
+			st.setInt(1, portion);
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+				Food f=idMap.get(res.getInt("food_code")); 
+				lista.add(f); 
+			}
+			conn.close();
+			return lista ;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null ;
+		}
+		
+	}
+	
+	public List<CoupleFoods> getCouples(Map<Integer, Food> idMap){
+		
+		String sql="SELECT f1.food_code, f2.food_code, AVG(condiment.condiment_calories) as cal " + 
+				"FROM food_condiment f1, food_condiment f2, condiment " + 
+				"WHERE f1.food_code>f2.food_code AND " + 
+				"f1.condiment_code=f2.condiment_code AND " + 
+				"f1.condiment_code=condiment.condiment_code " + 
+				"GROUP BY f1.food_code, f2.food_code"; 
+		
+		List<CoupleFoods> lista= new ArrayList<>(); 
+		
+		try {
+			Connection conn = DBConnect.getConnection() ;
+            PreparedStatement st = conn.prepareStatement(sql) ;
+			
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+				Food f1= idMap.get(res.getInt("f1.food_code"));
+				Food f2= idMap.get(res.getInt("f2.food_code"));
+				
+				lista.add(new CoupleFoods(f1, f2, res.getDouble("cal"))); 
+			}
+			conn.close();
+			return lista ;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null ;
+		}
+		
 	}
 }

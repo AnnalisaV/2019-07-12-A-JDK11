@@ -1,8 +1,9 @@
 package it.polito.tdp.food.model;
 
-public class Food {
+public class Food implements Comparable<Food> {
 	private Integer food_code;
 	private String display_name;
+	private boolean daPreparare; //per simulazione
 	
 	public Food(Integer food_code, String display_name) {
 		super();
@@ -51,6 +52,20 @@ public class Food {
 	@Override
 	public String toString() {
 		return display_name;
+	}
+
+	//nome alfabetico
+	@Override
+	public int compareTo(Food o) {
+		return this.display_name.compareTo(o.display_name);
+	}
+
+	public boolean isDaPreparare() {
+		return daPreparare;
+	}
+
+	public void setDaPreparare(boolean daPreparare) {
+		this.daPreparare = daPreparare;
 	}
 
 	

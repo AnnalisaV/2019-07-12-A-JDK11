@@ -7,6 +7,8 @@ package it.polito.tdp.food;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.food.model.Food;
+import it.polito.tdp.food.model.FoodCal;
 import it.polito.tdp.food.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -41,7 +43,7 @@ public class FoodController {
     private Button btnSimula; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxFood"
-    private ComboBox<?> boxFood; // Value injected by FXMLLoader
+    private ComboBox<Food> boxFood; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
@@ -49,19 +51,74 @@ public class FoodController {
     @FXML
     void doCreaGrafo(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Creazione grafo...");
+   
+
+    	int portion=-1; 
+    	if(this.txtPorzioni.getText().length()==0) {
+    		txtResult.appendText("ERRORE : Inserire un valore \n" );
+    		return; 
+    	}
+    	try {
+    		portion= Integer.parseInt(txtPorzioni.getText()); 
+    	}catch(NumberFormatException nfe) {
+    		txtResult.appendText("ERRORE : Inserire un valore numerico \n" );
+    		return; 
+    		
+    	}
+    	model.creaGrafo(portion);
+
+    	txtResult.appendText("Grafo creato con "+model.nVertex()+" vertex and "+model.nArchi()+" edges \n");
+    	
+    	//pulisco e popolo tendina
+    	this.boxFood.getItems().removeAll(this.boxFood.getItems()); 
+    	this.boxFood.getItems().addAll(this.model.getFoodVertex()); 
+    	
+    	this.btnCalorie.setDisable(false);
     }
     
     @FXML
     void doCalorie(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Analisi calorie...");
+    	
+
+    	if (boxFood.getValue()==null) {
+    		txtResult.appendText("ERRORE : selezionare un Food \n");
+    		return; 
+    	}
+    	
+    	for (FoodCal f : this.model.getCalorieCongiunteMax(this.boxFood.getValue())) {
+    		txtResult.appendText(f+"\n");
+    	}
+    	
     }
 
     @FXML
     void doSimula(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Simulazione...");
+    	
+
+    	int k= -1; 
+    	if(this.txtK.getText().length()==0) {
+    		txtResult.appendText("ERRORE : Inserire un valore per le stazioni di Lavoro \n" );
+    		return; 
+    	}
+    	try {
+    		k= Integer.parseInt(txtK.getText()); 
+    	}catch(NumberFormatException nfe) {
+    		txtResult.appendText("ERRORE : Inserire un valore numerico \n" );
+    		return; 
+    		
+    	}
+    	if (boxFood.getValue()==null) {
+    		txtResult.appendText("ERRORE : selezionare un Food \n");
+    		return; 
+    	}
+    	
+    	this.model.simula(k, this.boxFood.getValue());
+    	txtResult.appendText(" Simulazione : \n\n");
+    	txtResult.appendText("Cibi preparati : "+this.model.cibiPreparati()+ "\n"
+    			+ "Tempo di preparazione : "+model.tempoPreparazione());
+    	
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
@@ -77,5 +134,6 @@ public class FoodController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	this.btnCalorie.setDisable(true);
     }
 }
