@@ -87,6 +87,8 @@ public class Simulator {
 		switch(e.getType()) {
 		case CIBO_DA_PREPARARE:
 			
+			//da impostare anche uno stato IN PREPARAZIONE 
+			
 			List<FoodCal> vicini= this.model.getCalorieCongiunteMax(e.getFood()); //tra cui scegliere quello che sara preparato
 			FoodCal next= null; 
 			for (FoodCal food : vicini) {
